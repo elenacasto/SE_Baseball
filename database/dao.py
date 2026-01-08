@@ -5,59 +5,50 @@ from model.team import Team
 class DAO:
 
     @staticmethod
-    def get_year(min_year):
+    def get_year():
         conn = DBConnect.get_connection()
-
-        result = []
         cursor = conn.cursor(dictionary=True)
-        query = """ SELECT year
-                    FROM teams
+        query = """ SELECT DISTINCT year
+                    FROM team
                     WHERE year >= 1980
                     ORDER BY year """
-        cursor.execute(query, (min_year,))
+        cursor.execute(query)
 
-        for row in cursor:
-            result.append(row)
+        years = [row['year'] for row in cursor]
 
         cursor.close()
         conn.close()
-        return result
+        return years
 
     @staticmethod
-    def get_teams(min_year):
+    def get_teams(year):
         conn = DBConnect.get_connection()
-
-        result = []
 
         cursor = conn.cursor(dictionary=True)
         query = """ SELECT t.id, t.team_code, t.name
                     FROM team t 
                     WHERE t.year = %s """
 
-        cursor.execute(query, (min_year,))
+        cursor.execute(query, (year,))
 
-        for row in cursor:
-            anno_str = row['year'].replace(",", "")
-            anno = int(anno_str)
-            team = Team(id=row['id'], team_code=row['team_code'], name=row['name'], salary=row['somma_salario'], year=anno)
-            result.append(team)
+        teams = [Team(id=row['id'], team_code=row['team_code'], name=row['name']) for row in cursor]
 
         cursor.close()
         conn.close()
-        return result
+        return teams
 
     @staticmethod
     def get_salaries(min_year):
         conn = DBConnect.get_connection()
-        result = []
+        result = {}
         cursor = conn.cursor(dictionary=True)
         query = """ SELECT team_id, SUM(salary) as totale
-                    FROM teams  
+                    FROM salary
                     WHERE year = %s 
                     GROUP BY team_id """
         cursor.execute(query, (min_year,))
         for row in cursor:
-            result.append(row)
+            result = {row['team_id']: row['totale']}
 
         cursor.close()
         conn.close()
