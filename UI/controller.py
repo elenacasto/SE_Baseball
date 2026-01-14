@@ -7,23 +7,31 @@ class Controller:
         self._view = view
         self._model = model
 
+    def populate_years(self):
+        self.list_years = self._model.load_years()
+
+        for year in self.list_years:
+            self._view.dd_anno.options.append(ft.dropdown.Option(year))
+        self._view.update()
+
     def handle_crea_grafo(self, e):
         """ Handler per gestire creazione del grafo """""
 
         try:
-            year = self._view.dd_anno.value
+            year = int(self._view.dd_anno.value)
         except AttributeError:
             self._view.show_alert("Selezionare l'anno")
             return
 
         self._model.build_graph(year)
 
+
     def handle_dettagli(self, e):
         """ Handler per gestire i dettagli """""
-        team_id = self._view.dd_squadra.value
+        team_id = int(self._view.dd_squadra.value)
 
         self._view.txt_risultato.controls.clear()
-        for n, w in self._model.get_vicini(self._model.teams_map[team_id]):
+        for n, w in self._model.get_neighbours(self._model.team_map[team_id]):
             self._view.txt_risultato.controls.append(
                 ft.Text(f"{n} - peso {w}")
             )
@@ -31,14 +39,14 @@ class Controller:
 
     def handle_percorso(self, e):
         """ Handler per gestire il problema ricorsivo di ricerca del percorso """""
-        # TODO
+
 
     """ Altri possibili metodi per gestire di dd_anno """""
     def get_years(self):
-        return self._model.get_years()
+        return self._model.load_years()
 
     def handle_year_change(self, e):
-        year = self._view.dd_anno.value
+        year = int(self._view.dd_anno.value)
         teams = self._model.load_teams(year)
 
         self._view.txt_out_squadre.controls.clear()
@@ -47,7 +55,7 @@ class Controller:
         )
         for t in teams:
             self._view.txt_out_squadre.controls.append(
-                ft.Text(t)
+                ft.Text(f"{t}")
             )
 
         self._view.dd_squadra.options = [

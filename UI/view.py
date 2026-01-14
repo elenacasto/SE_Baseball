@@ -32,8 +32,7 @@ class View:
         # Riga 1
         self.dd_anno = ft.Dropdown(label="Anno", width=200, alignment=ft.alignment.top_left,
                                    on_change=self.controller.handle_year_change)
-
-        self.dd_anno_options = [ft.Dropdown(str(y)) for y in self.controller.get_years()]
+        self.controller.populate_years()
 
         row1 = ft.Row([ft.Container(self.txt_titolo, width=500),
                                ft.Container(None, width=0),
