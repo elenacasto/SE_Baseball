@@ -39,7 +39,21 @@ class Controller:
 
     def handle_percorso(self, e):
         """ Handler per gestire il problema ricorsivo di ricerca del percorso """""
+        team_id = self._view.dd_squadra.value
+        start = next(t for t in self._model.teams if t.id == int(team_id))
+        path, weight = self._model.compute_path(start)
 
+        self._view.txt_risultato.controls.clear()
+        for i in range(len(path) - 1):
+            w = self._model.G[path[i]][path[i + 1]]['weight']
+            self._view.txt_risultato.controls.append(
+                ft.Text(f"{path[i]} -> {path[i + 1]} (peso {w})")
+            )
+
+        self._view.txt_risultato.controls.append(
+            ft.Text(f"Peso totale: {weight}")
+        )
+        self._view.update()
 
     """ Altri possibili metodi per gestire di dd_anno """""
     def get_years(self):

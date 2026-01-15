@@ -12,7 +12,7 @@ class Model:
         self.teams = []
         self.salaries_map = {}
         self.team_map = {}
-        self.K = 3
+        self.K = 7
         self.best_path = []
         self.best_weight = 0
 
@@ -32,7 +32,7 @@ class Model:
         for i, t1 in enumerate(self.teams):
             for t2 in self.teams[i+1:]:
                 peso = self.salaries_map.get(t1.id, 0) + self.salaries_map.get(t2.id, 0)
-                self.G.add_edge(t1.id, t2.id, weight=peso)
+                self.G.add_edge(t1, t2, weight=peso)
 
         self.team_map = {t.id: t for t in self.teams}
 
